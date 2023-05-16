@@ -12,3 +12,44 @@ String value=cell.getStringCellValue();
 System.out.println(value);
 }
 }
+--------------------------read XL data with dynamic based on row&cell num
+package readXL;
+
+import java.io.IOException;
+
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+public class ReadXLData 
+{
+public static void main(String[] args) throws IOException 
+{
+	
+String filelocation="./Test_Data/Login_Data.xlsx";
+XSSFWorkbook book=new XSSFWorkbook(filelocation);
+XSSFSheet sheet =book.getSheetAt(0);
+int lastrownumber=sheet.getLastRowNum();//exclude the header row number
+System.out.println(lastrownumber+ "row number");
+System.out.println("no of with header  "+sheet.getPhysicalNumberOfRows());//include the header row
+int lastcell=sheet.getRow(0).getLastCellNum();
+System.out.println("last cell number   :"+ lastcell);
+for (int i = 1; i <=lastrownumber; i++) { 
+	XSSFRow row = sheet.getRow(i);
+	for (int j = 0; j <lastcell; j++) {
+		XSSFCell cell = row.getCell(j);
+		
+		DataFormatter df=new DataFormatter();//date formater used to formate data types
+		String value=df.formatCellValue(cell); //
+		//cell.setCellType(CellType.STRING);    --> ther is two way formate cell values
+		//String value = cell.getStringCellValue();
+		System.out.println(value);
+	} System.err.println("_________________");
+}
+book.close();
+}
+}
+
