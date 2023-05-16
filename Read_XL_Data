@@ -1,0 +1,14 @@
+public class ReadXLData 
+{
+public static void main(String[] args) throws IOException 
+{
+String filelocation="./Test_Data/Login_Data.xlsx";
+XSSFWorkbook book=new XSSFWorkbook(filelocation);
+XSSFSheet sheet =book.getSheetAt(0);
+XSSFRow row=sheet.getRow(1);
+XSSFCell cell=row.getCell(1);
+cell.setCellType(CellType.STRING);
+String value=cell.getStringCellValue();
+System.out.println(value);
+}
+}
