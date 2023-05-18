@@ -52,4 +52,83 @@ for (int i = 1; i <=lastrownumber; i++) {
 book.close();
 }
 }
+==============================================================
+====Read LoginData from Excel & Data provid to Selenium login page======================================
+---Reas Data from xl------
+public class ReadDataXL
+{
+	public static Row row;
+	public static Cell cell;
+public static String[][] rData() throws EncryptedDocumentException, IOException
+{
+	File file=new File("./Test_Data/Login_Data.xlsx");
+	FileInputStream fin=new FileInputStream(file);
+	Workbook wb=WorkbookFactory.create(fin);
+	Sheet sheet=wb.getSheet("Sheet1");
+	int lrow=sheet.getLastRowNum();
+	int lcell=sheet.getRow(0).getLastCellNum();
+	String[][] data=new String[lrow][lcell];
+	for(int i=1;i<=sheet.getLastRowNum();i++)
+	{
+	row=sheet.getRow(i);	
+	for(int j=0;j<row.getLastCellNum();j++)
+	{
+		cell=row.getCell(j);
+		cell.setCellType(CellType.STRING);
+		
+	String val=cell.getStringCellValue();
+	
+		data[i-1][j]=val;
+	}
+	}
+	return data;
+}
+}
+-----Data Provider class---
+public class DataProvide 
+{
+	@DataProvider(name="p1")
+public String[][] setData() throws EncryptedDocumentException, IOException
+{
+		String[][] loginData=ReadDataXL.rData();
+/*String[][] data=new String[2][2];
+data[0][0]="8680097929";
+data[0][1]="Ashok@123";
+
+data[1][0]="";
+data[1][1]="";
+
+data[0][0]="8680097929";
+data[0][1]="Ashok@123";
+
+return data;*/
+		return loginData;
+}
+}
+------ Get Data &Login class-------
+package practics_xldata;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.Test;
+
+public class DataLogin 
+{
+	@Test(dataProvider="p1",dataProviderClass=DataProvide.class)
+	public void login(String data[])
+	{
+		System.out.println("email_ID    :"+ data[0]);
+		System.out.println("Password    :"+ data[1]);
+		
+	System.setProperty("webdriver.chrome.driver","./drivers/chromedriver.exe");	
+	ChromeDriver driver=new ChromeDriver();
+	driver.get("http://52.66.129.203:4200/#/auth/login");
+	driver.findElementByXPath("//input[@id='mat-input-0']").sendKeys(data[0]);
+	driver.findElementByXPath("//input[@id='mat-input-1']").sendKeys(data[1]);
+	driver.findElementByXPath("//button[@id='kt_login_signin_submit']").click();
+	System.out.println(driver.getCurrentUrl());
+	driver.quit();
+	
+}
+}
+
 
