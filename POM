@@ -1,0 +1,90 @@
+-----Base pack - ------
+package org.boom.base;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+
+public class BroswerBase
+{
+ protected RemoteWebDriver driver;
+ 
+ public String url="http://52.66.129.203:4200/#/auth/login";
+ 	@BeforeMethod
+	public void startApp()
+	{
+ 		System.setProperty("webdriver.chrome.driver","./driver/chromedriver.exe");
+		driver=new ChromeDriver();
+		driver.get(url);
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		System.out.println("web driver open/launch");
+	}
+	@AfterMethod
+	public void closeApp()
+	{
+		driver.quit();
+		System.out.println("chrome web driver close");
+	}
+}
+-------Page pack-----------
+package orq.boom.pages;
+
+import org.boom.base.BroswerBase;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+public class Login  extends BroswerBase
+{
+	public Login(RemoteWebDriver driver)
+	{
+		// TODO Auto-generated constructor stub
+		this.driver=driver;
+	}
+	//RemoteWebDriver driver;- boc we user driver from extend parent class
+//Actions
+	public Login enterUserame(String user)
+	{
+		driver.findElementByXPath("//input[@id='mat-input-0']").sendKeys(user);
+		return this;
+	}
+	public Login enterPassword(String pass)
+	{
+		driver.findElementByXPath("//input[@id='mat-input-1']").sendKeys(pass);
+		return this;
+	}
+	public Dashboardpage clickLogin()
+	{
+		driver.findElementByXPath("//button[@id='kt_login_signin_submit']").click();	
+		return new Dashboardpage();
+	}
+	
+	
+	public void login(String username, String pass)
+	{
+		
+		enterUserame(username);
+		enterPassword(pass);
+		clickLogin();
+	}
+}
+--------Test pack----
+package org.boom.test;
+
+import org.boom.base.BroswerBase;
+import org.testng.annotations.Test;
+
+import orq.boom.pages.Login;
+
+public class Test001Login  extends BroswerBase
+{
+	@Test
+public void logintest001()
+{
+
+		new Login(driver).enterUserame("8680097929").enterPassword("Ashok@123").clickLogin();
+		System.out.println("Test case Login");
+}
+}
