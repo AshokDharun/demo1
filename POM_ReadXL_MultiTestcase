@@ -1,0 +1,216 @@
+---Base pack class----
+package org.boom.base;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.poi.EncryptedDocumentException;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+
+import utils.ReadData;
+
+public class BroswerBase
+{
+ protected RemoteWebDriver driver;
+ public String filename="";
+ 
+ @DataProvider(name="Dprovide")
+ public String[][] dataProvider() throws EncryptedDocumentException, IOException
+ {
+	String[][] data= ReadData.rData(filename);
+	return data;
+ }
+ 
+ 	@BeforeMethod
+	public void startApp()
+	{
+ 		 String url="http://52.66.129.203:4200/#/auth/login";
+ 		System.setProperty("webdriver.chrome.driver","./driver/chromedriver.exe");
+		driver=new ChromeDriver();
+		driver.get(url);
+		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+		System.out.println("web driver open/launch");
+	}
+	@AfterMethod
+	public void closeApp()
+	{
+		driver.quit();
+		System.out.println("chrome web driver close");
+	}
+}
+-------Read Data with util pack----------
+package utils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.testng.annotations.Test;
+
+public class ReadData 
+{
+	
+	public static String[][] rData(String fileName) throws EncryptedDocumentException, IOException
+	{
+		Row row;
+		Cell cell;
+		//File file=new File("./data/Test001.xlsx");///TestNG_POM/data/Test001.xlsx
+		FileInputStream fin=new FileInputStream("./data/"+fileName+".xlsx");
+		Workbook wb=WorkbookFactory.create(fin);
+		Sheet sheet=wb.getSheet("Sheet1");
+		int lrow=sheet.getLastRowNum();
+		System.out.println("last row: "+lrow);
+		int lcell=sheet.getRow(0).getLastCellNum();
+		System.out.println("no of cell :" +lcell);
+		String[][] data=new String[lrow][lcell];
+		for(int i=1;i<=sheet.getLastRowNum();i++)
+		{
+		row=sheet.getRow(i);	
+		for(int j=0;j<row.getLastCellNum();j++)
+		{
+			cell=row.getCell(j);
+			cell.setCellType(CellType.STRING);
+			
+		String val=cell.getStringCellValue();
+		
+			data[i-1][j]=val;
+		}
+		}
+		return data;
+	}
+}
+-------Page pack - Login class----
+package orq.boom.pages;
+
+import org.boom.base.BroswerBase;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+public class Login  extends BroswerBase
+{
+	public Login(RemoteWebDriver driver)
+	{
+		// TODO Auto-generated constructor stub
+		this.driver=driver;
+	}
+	
+	
+	public boolean getUsernameLabel()
+	{
+		return driver.findElementByXPath("//label[@for='mat-input-0']").isDisplayed();
+	}
+	
+	public boolean getPasswordLabel()
+	{
+		return driver.findElementByXPath("//label[@for='mat-input-1']").isDisplayed();
+	}
+	
+	//RemoteWebDriver driver;- boc we user driver from extend parent class
+//Actions
+	public Login enterUserame(String user)
+	{
+		driver.findElementByXPath("//input[@id='mat-input-0']").sendKeys(user);
+		return this;
+	}
+	public Login enterPassword(String pass)
+	{
+		driver.findElementByXPath("//input[@id='mat-input-1']").sendKeys(pass);
+		return this;
+	}
+	public Dashboardpage clickLogin()
+	{
+		driver.findElementByXPath("//button[@id='kt_login_signin_submit']").click();	
+		return new Dashboardpage();
+	}
+	
+	
+	public void login(String username, String pass)
+	{
+		
+		enterUserame(username);
+		enterPassword(pass);
+		clickLogin();
+	}
+}
+-------Test pack ---Test001 class----------
+package org.boom.test;
+
+import org.boom.base.BroswerBase;
+import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import orq.boom.pages.Login;
+
+public class Test001Login  extends BroswerBase
+{
+	@BeforeTest
+	public void setFilename()
+	{
+		filename="Test001";
+	}
+	
+	
+	@Test(dataProvider="Dprovide")
+public void logintest001(String[] data)
+{
+		
+		Login lp=new Login(driver);
+		boolean usernamelbl = lp.getUsernameLabel();
+		Assert.assertEquals(usernamelbl, true);
+		boolean passlabl=lp.getPasswordLabel();
+		Assert.assertTrue(passlabl);
+		System.out.println("Assertion part"); 
+		
+
+		new Login(driver).enterUserame(data[0])
+		.enterPassword(data[1])
+		.clickLogin();
+		System.out.println("Test case Login");
+}
+}
+-----Test002 class------------
+package org.boom.test;
+
+import org.boom.base.BroswerBase;
+import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+import orq.boom.pages.Login;
+
+public class Test002Login extends BroswerBase
+{
+	@BeforeTest
+	public void setFilename()
+	{
+		filename="Test002";
+	}
+	
+	@Test(dataProvider="Dprovide")
+	public void logintest002(String username,String password)// herer we can use string[] arge also refer test001 class
+	{
+			
+			Login lp=new Login(driver);
+			boolean usernamelbl = lp.getUsernameLabel();
+			Assert.assertEquals(usernamelbl, true);
+			boolean passlabl=lp.getPasswordLabel();
+			Assert.assertTrue(passlabl);
+			System.out.println(" test002 Assertion part");
+			
+
+			new Login(driver).enterUserame(username).enterPassword(password).clickLogin();
+			System.out.println("Test case Login test 002");
+	}
+}
