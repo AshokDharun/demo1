@@ -1,0 +1,16 @@
+public class Skyeeplogin 
+{
+public static void main(String[] args) 
+{
+	System.setProperty("webdriver.chrome.driver","./drivers/chromedriver.exe");	
+	ChromeDriver driver=new ChromeDriver();
+	driver.get("https://web.skype.com/");
+	driver.findElementByXPath("//input[@type='email']").sendKeys("8680097929");
+	driver.findElementByXPath("//input[@type='submit']").click();
+	driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+	driver.findElementByXPath("[//input[@name='passwd']").sendKeys("Ashok@3543");
+	driver.findElementByXPath("[//input[@id='idSIButton9']").click();
+  driver.close();
+  }
+  }
+  
