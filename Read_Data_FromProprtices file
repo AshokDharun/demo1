@@ -1,0 +1,37 @@
+package propertices;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class ReadProperties 
+{
+public static void main(String[] args) throws FileNotFoundException, IOException 
+{
+/**Properties propertis=new Properties();
+propertis.load(new FileInputStream("./demo.propertices"));
+String pro=propertis.getProperty("Welcome");
+System.out.println(pro);
+*/
+	Properties property=new Properties();
+	property.load(new FileInputStream("./Login.propertices"));
+	String user=property.getProperty("user");
+	String pass=property.getProperty("pass");
+	
+	System.setProperty("webdriver.chrome.driver","./driver/chromedriver.exe");
+	ChromeDriver driver=new ChromeDriver();
+	driver.manage().window().maximize();
+	driver.manage().timeouts().implicitlyWait(30,TimeUnit.SECONDS);
+	driver.get("http://52.66.129.203:4200/#/auth/login");
+	System.out.println(user + " : "+ pass);
+	driver.findElementByXPath("//input[@id='mat-input-0']").sendKeys(user);
+	driver.findElementByXPath("//input[@id='mat-input-1']").sendKeys(pass);
+	driver.findElementByXPath("//button[@id='kt_login_signin_submit']").click();
+
+}
+}
