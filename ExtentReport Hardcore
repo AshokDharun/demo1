@@ -1,0 +1,32 @@
+package utils;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+public class AutomationReport1 {
+
+	public static void main(String[] args)
+	{
+		//create blank html to repoert storein 
+		ExtentSparkReporter report=new ExtentSparkReporter("./TestReport.html");
+		//actual report
+		ExtentReports extent=new ExtentReports();
+		extent.attachReporter(report);
+		
+		ExtentTest test=extent.createTest("tc001-> login test");
+		test.pass("enter user name");
+		test.pass("Enter password");
+		test.pass("click login ");
+		
+		ExtentTest test2=extent.createTest("tc002-> logout");
+		test2.pass("emter logiout");
+		test2.fail("click but",MediaEntityBuilder.createScreenCaptureFromPath("./image/SP1.png").build());
+		
+		extent.flush();
+	
+
+	}
+
+}
