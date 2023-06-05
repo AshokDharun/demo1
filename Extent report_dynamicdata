@@ -1,0 +1,100 @@
+====Report class==========
+package org.reports.practics;
+
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeSuite;
+
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+public class AutomationReport2
+{
+	ExtentReports reports;
+	ExtentTest test;
+	String desc="";String auth="";String cate="";
+	
+	@BeforeSuite
+	protected void startReport()
+	{
+		//html
+		 ExtentSparkReporter extent=new ExtentSparkReporter("./TestReport.html");
+		 //actual reports class
+		  reports=new ExtentReports();
+		 reports.attachReporter(extent);
+	}
+	@AfterSuite
+	 protected void saveReport()
+	{
+		 reports.flush();	
+	}
+	@BeforeClass
+	 void creatTest()
+	 {
+		 ExtentTest test=reports.createTest(desc);
+		 test.assignAuthor(auth);
+		 test.assignCategory(cate);  
+	 }  
+	 public void stepReport(String status,String description)
+	 {
+		 switch (status.toLowerCase()) {
+		case "pass":
+			System.out.println("pass case");
+			test.pass(description);
+			break;
+		case "fail":
+			System.out.println("fail case");
+			test.fail(description);
+			break;
+		case "info":
+			test.info(description);
+			break;
+		case "warning":
+			test.warning(description);
+			break;
+		default:
+			System.out.println("there is pending process");
+			break;
+		}
+	 }
+// public static void main(String[] args) {
+//	 test.pass("login the user");
+//	 test.fail("click utn",MediaEntityBuilder.createScreenCaptureFromPath("./image/SP1.png").build());
+//	 
+	 //Save 
+	
+	 
+}
+
+
+===My report claas(Test class)=====
+package org.reports.practics;
+
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+public class MyReports extends AutomationReport2
+{
+	@BeforeTest
+	void setData()
+	{
+		desc="my first";
+		auth="Asd";
+		cate="smok";
+	}
+	
+@Test	
+void myTest()
+{
+	
+System.out.println("Test begin");	
+//stepReport("pass","some description");
+stepReport("info", "somwthing");
+System.out.println("Test End");
+}
+
+
+}
