@@ -1,7 +1,7 @@
 
 public class ReadXLData 
 {
-public static void main(String[] args) throws IOException 
+public static void main(String[] args) throws IOException  
 {
 String filelocation="./Test_Data/Login_Data.xlsx";
 XSSFWorkbook book=new XSSFWorkbook(filelocation);
